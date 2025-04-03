@@ -1,0 +1,23 @@
+body{
+    font-family: arial, sans-serif;
+    text align: center;
+    background color: blue;
+}
+
+header{
+    margin-top: 50px;
+}
+
+button{
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: aqua;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover{
+     background-color: aliceblue;
+}

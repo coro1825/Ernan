@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Načrt za rentanje prevoznih sredstev
 
 ## UVOD
@@ -83,3 +84,9 @@ Spletna stran za rentanje prevoznih sredstev bo pripomogla k večji fleksibilnos
 - Nakupi in prodaja vozil
 - Naročnina za lastnike
 
+=======
+# Ernan
+
+
+# test test
+>>>>>>> 578e620 (delo)
