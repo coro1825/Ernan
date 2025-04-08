@@ -1,21 +1,45 @@
-function showLogin(){
-    document.getElementById("loginForm").style.display = "block";
-}
+document.addEventListener("DOMContenLoaded", function (){
+    document.getElementById("loginForm")?.addEventListener("submit",function(event){
+        event.preventDefault();
 
-function showSignup(){
-    document.getElementById("signupForm").style.display = "block";
-}
+        let username = document.getElementById("username").value;
+        let password = document.getElementById("password").value;
 
-function closeModal(){
-    document.getElementById("loginForm").style.display = "none";
-    document.getElementById("signupForm").style.display = "none";
-}
+        fetch("/login", {
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"}
+            body: new URLSearchParams({username: username, password: password})
+        })
+        .then(Response => Response.json())
+        .then(data => {
+            if(data.success) {
+                window.location.href = "/";
+            } else{
+                document.getElementById("loginError")
+            }
+        })
+        .catch(error => console.error("Napaka pri prijavi:",error));
+    });
 
-function login(){
-    let email = document.getElementById("loginEmail").value;
-    let password = document.getElementById("loginPassword").value;
-    alert("prijavljen kot: " + email)
-    closeModal();
-}
+    document.getElementById("signupForm")?.addEventListener("submit", function (event) {
+        event.preventDefault();
 
-function signup()
+        let username = document.getElementById("newUsername").value;
+        let password = document.getElementById("newPassword").value;
+
+        fetch("/signup",{
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            body: new URLSearchParams({username: username,password: password})
+        })
+        .then(Response =>.json())
+        .then(data => {
+            if(data.success) {
+                window.location.href = "/";
+            } else{
+                document.getElementById("signupError").textContent = data.error;
+            }
+        })
+        .catch(error => console.error("Napaka pri registraciji", error));
+    });
+});
