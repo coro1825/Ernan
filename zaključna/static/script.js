@@ -7,7 +7,7 @@ document.addEventListener("DOMContenLoaded", function (){
 
         fetch("/login", {
             method: "POST",
-            headers: {"Content-Type": "application/x-www-form-urlencoded"}
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
             body: new URLSearchParams({username: username, password: password})
         })
         .then(Response => Response.json())
@@ -32,7 +32,7 @@ document.addEventListener("DOMContenLoaded", function (){
             headers: {"Content-Type": "application/x-www-form-urlencoded"},
             body: new URLSearchParams({username: username,password: password})
         })
-        .then(Response =>.json())
+        .then(Response => Response.json())
         .then(data => {
             if(data.success) {
                 window.location.href = "/";
