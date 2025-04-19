@@ -7,11 +7,32 @@ app.secret_key = "skrivnost"
 
 db = TinyDB("uporabniki.json")
 users = db.table("uporabniki")
+vozila = db.table("vozila")
+ocene = db.table("ocene")
+rezervacije = db.table("rezervacije")
 user = Query()
+
+if len(vozila) ==0:
+    vozila.insert_multiple([
+        {"id": 1, "ime": "BMW M4", "lokacija": "Ljubljana", "tip": "Avto", "priljubljenost": 10},
+        {"id": 1, "ime": "Audi RS5", "lokacija": "Maribor", "tip": "Avto", "priljubljenost": 9},
+        {"id": 1, "ime": "Ford Mustang", "lokacija": "Celje", "tip": "Avto", "priljubljenost": 8},
+        {"id": 1, "ime": "Renault Clio RS", "lokacija": "Koper", "tip": "Avto", "priljubljenost": 7},
+        {"id": 1, "ime": "KTM Duke", "lokacija": "Ljubljana", "tip": "Motor", "priljubljenost": 6},
+        {"id": 1, "ime": "VW Transporter", "lokacija": "Maribor", "tip": "Kombi", "priljubljenost": 6},
+    ])
+
+
 
 @app.route("/")
 def index():
-    return render_template('index.html')
+    prikazana_vozila = sorted(vozila.all(), key=lambda x:x['priljubljenost'], reverse=True)
+    mnenja = ocene.all()
+    return render_template('index.html', vozila=prikazana_vozila, ocene=mnenja)
+
+@app.route("/vozila")
+def vozila_stran():
+    return render_template(vozila.html)
 
 @app.route("/login",methods=['GET','POST'])
 def login():
