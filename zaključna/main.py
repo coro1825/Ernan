@@ -34,6 +34,10 @@ def index():
 def vozila_stran():
     return render_template(vozila.html)
 
+@app.route("/rezervacija")
+def rezervacija():
+    return render_template(rezervacija.html)
+
 @app.route("/login",methods=['GET','POST'])
 def login():
     if request.method == 'POST':

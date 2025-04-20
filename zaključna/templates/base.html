@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Rentaj Vozilo{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</head>
+<body>
+    <header>
+        <h1>Rentanje prevoznih sredstev</h1>
+        <nav>
+            <a href="/">Domov</a> |
+            <a href="/vozila">Iskanje</a> |
+            <a href="/rezervacija">Rezervacija</a> |
+            {% if session.username %}
+                Prijavljen kot {{ session.username }} |
+                <a href="/logout">Odjava</a>
+            {% else %}
+                <a href="/login">Prijava</a> |
+                <a href="/signup">Registracija</a>
+            {% endif %}
+        </nav>
+        <hr>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

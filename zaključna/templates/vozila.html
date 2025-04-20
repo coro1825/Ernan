@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Iskanje vozil{% endblock %}
+{% block content %}
 <h2>Iskanje vozil</h2>
 <input type="text" id="lokacija" placeholder="Lokacija">
 <select id="tip">
@@ -26,3 +29,4 @@ function isci() {
         })
 }
 </script>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Rezervacija{% endblock %}
+{% block content %}
+<h2>Rezervacija vozila</h2>
+<form method="post">
+    <label>Od: <input type="date" name="zacetek" required></label>
+    <label>Do: <input type="date" name="konec" required></label>
+    <button type="button" onclick="najdi()">Prikaži prosta vozila</button>
+    <div id="vozila"></div>
+</form>
+
+<script>
+function najdi() {
+    const z = document.querySelector("[name='zacetek']").value;
+    const k = document.querySelector("[name='konec']").value;
+    fetch(`/api/razpolozljiva-vozila?zacetek=${z}&konec=${k}`)
+        .then(r => r.json())
+        .then(data => {
+            let html = "<ul>";
+            data.forEach(v => {
+                html += `<li>${v.tip} - ${v.ime} (${v.lokacija}) 
+                    <form method="post" style="display:inline;">
+                        <input type="hidden" name="vozilo_id" value="${v.id}">
+                        <input type="hidden" name="zacetek" value="${z}">
+                        <input type="hidden" name="konec" value="${k}">
+                        <button type="submit">Rezerviraj</button>
+                    </form>
+                </li>`;
+            });
+            html += "</ul>";
+            document.getElementById("vozila").innerHTML = html;
+        });
+}
+</script>
+{% endblock %}

@@ -1,21 +1,11 @@
-<!DOCTYPE html>
-<html lang="sl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dobrodošli</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h1>Dobrodošli v naši aplikaciji!</h1>
-        {% if session.username %}
-            <p>Pozdravljen, {{ session.username }}!</p>
-            <a href="{{ url_for('logout') }}" class="btn">Odjava</a>
-        {% else %}
-            <a href="{{ url_for('login') }}" class="btn">Prijava</a>
-            <a href="{{ url_for('signup') }}" class="btn">Registracija</a>
-        {% endif %}
-    </div>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Domov{% endblock %}
+{% block content %}
+<h2>Priljubljena vozila</h2>
+<ul>
+    {% for v in vozila %}
+        <li>{{ v.tip }} - {{ v.ime }} ({{ v.lokacija }}) - ⭐ {{ v.priljubljenost }}</li>
+    {% endfor %}
+</ul>
+<a href="/rezervacija"><button>Rezerviraj svoj avto</button></a>
+{% endblock %}
