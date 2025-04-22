@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from tinydb import TinyDB, Query
 import os
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "skrivnost"
@@ -37,6 +38,35 @@ def vozila_stran():
 @app.route("/rezervacija")
 def rezervacija():
     return render_template(rezervacija.html)
+
+@app.route("/api/razpolozljiva-vozila")
+def razpolozljiva():
+    zacetek = request.args.get("zacetek")
+    konec =request.args.get("konec")
+    razpolozljiva_vozila = []
+    for v in vozila.all():
+        if v['tip'] not in ["Avto", "Kombi", "Motor"]:
+            continue
+        id_v = v['id']
+        kolizija = False
+        for r in rezervacije.search(Query().vozilo_id == id_v):
+            z = datetime.strptime(zacetek, "%Y-%M-%d")
+            k = datetime.strptime(konec, "%Y-%M-%d")
+            z_r = datetime.strptime(r['zacetek'], "%Y-%M-%d")
+            k_r = datetime.strptime(r['konec'], "%Y-%M-%d")
+            if (z <= k_r and k >= z_r):
+                kolizija = True
+                break
+        if not kolizija:
+            razpolozljiva_vozila.append(v)
+    return jsonify(razpolozljiva_vozila)
+
+@app.route("/api/iskanje")
+def iskanje():
+    tip = request.args.get("tip")
+    lokacija = request.args.get("lokacija")
+    rezultati = [v for v in vozila.all() if (not tip or v["tip"] == tip) and (not lokacija or v["lokacija"] == lokacija)]
+    return jsonify(rezultati)
 
 @app.route("/login",methods=['GET','POST'])
 def login():
