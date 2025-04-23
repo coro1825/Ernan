@@ -16,11 +16,11 @@ user = Query()
 if len(vozila) ==0:
     vozila.insert_multiple([
         {"id": 1, "ime": "BMW M4", "lokacija": "Ljubljana", "tip": "Avto", "priljubljenost": 10},
-        {"id": 1, "ime": "Audi RS5", "lokacija": "Maribor", "tip": "Avto", "priljubljenost": 9},
-        {"id": 1, "ime": "Ford Mustang", "lokacija": "Celje", "tip": "Avto", "priljubljenost": 8},
-        {"id": 1, "ime": "Renault Clio RS", "lokacija": "Koper", "tip": "Avto", "priljubljenost": 7},
-        {"id": 1, "ime": "KTM Duke", "lokacija": "Ljubljana", "tip": "Motor", "priljubljenost": 6},
-        {"id": 1, "ime": "VW Transporter", "lokacija": "Maribor", "tip": "Kombi", "priljubljenost": 6},
+        {"id": 2, "ime": "Audi RS5", "lokacija": "Maribor", "tip": "Avto", "priljubljenost": 9},
+        {"id": 3, "ime": "Ford Mustang", "lokacija": "Celje", "tip": "Avto", "priljubljenost": 8},
+        {"id": 4, "ime": "Renault Clio RS", "lokacija": "Koper", "tip": "Avto", "priljubljenost": 7},
+        {"id": 5, "ime": "KTM Duke", "lokacija": "Ljubljana", "tip": "Motor", "priljubljenost": 6},
+        {"id": 6, "ime": "VW Transporter", "lokacija": "Maribor", "tip": "Kombi", "priljubljenost": 6},
     ])
 
 
