@@ -1,45 +1,88 @@
-document.addEventListener("DOMContenLoaded", function (){
-    document.getElementById("loginForm")?.addEventListener("submit",function(event){
-        event.preventDefault();
+document.addEventListener("DOMContentLoaded", function () {
 
-        let username = document.getElementById("username").value;
-        let password = document.getElementById("password").value;
+    const loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+        const usernameInput = document.getElementById("username");
+        const passwordInput = document.getElementById("password");
+        const errorBox = document.getElementById("loginError");
 
-        fetch("/login", {
-            method: "POST",
-            headers: {"Content-Type": "application/x-www-form-urlencoded"},
-            body: new URLSearchParams({username: username, password: password})
-        })
-        .then(Response => Response.json())
-        .then(data => {
-            if(data.success) {
-                window.location.href = "/";
-            } else{
-                document.getElementById("loginError")
+
+        const zadnji = localStorage.getItem("zadnjiUporabnik");
+        if (zadnji) usernameInput.value = zadnji;
+
+        loginForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (!username || !password) {
+                errorBox.textContent = "Vsa polja morajo biti izpolnjena!";
+                return;
             }
-        })
-        .catch(error => console.error("Napaka pri prijavi:",error));
-    });
 
-    document.getElementById("signupForm")?.addEventListener("submit", function (event) {
-        event.preventDefault();
+            errorBox.textContent = "Prijavljam...";
 
-        let username = document.getElementById("newUsername").value;
-        let password = document.getElementById("newPassword").value;
+            fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ username, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    localStorage.setItem("zadnjiUporabnik", username);
+                    window.location.href = "/";
+                } else {
+                    errorBox.textContent = data.error;
+                    errorBox.style.color = "red";
+                    errorBox.style.animation = "blink 0.4s ease-in-out 3";
+                }
+            })
+            .catch(error => {
+                console.error("Napaka pri prijavi:", error);
+                errorBox.textContent = "Strežniška napaka!";
+            });
+        });
+    }
 
-        fetch("/signup",{
-            method: "POST",
-            headers: {"Content-Type": "application/x-www-form-urlencoded"},
-            body: new URLSearchParams({username: username,password: password})
-        })
-        .then(Response => Response.json())
-        .then(data => {
-            if(data.success) {
-                window.location.href = "/";
-            } else{
-                document.getElementById("signupError").textContent = data.error;
+    const signupForm = document.getElementById("signupForm");
+    if (signupForm) {
+        const newUsername = document.getElementById("newUsername");
+        const newPassword = document.getElementById("newPassword");
+        const signupError = document.getElementById("signupError");
+
+        signupForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const username = newUsername.value.trim();
+            const password = newPassword.value.trim();
+
+            if (!username || !password) {
+                signupError.textContent = "Vsa polja morajo biti izpolnjena!";
+                return;
             }
-        })
-        .catch(error => console.error("Napaka pri registraciji", error));
-    });
+
+            fetch("/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ username, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    localStorage.setItem("zadnjiUporabnik", username);
+                    window.location.href = "/";
+                } else {
+                    signupError.textContent = data.error;
+                    signupError.style.color = "red";
+                    signupError.style.animation = "blink 0.4s ease-in-out 3";
+                }
+            })
+            .catch(error => {
+                console.error("Napaka pri registraciji:", error);
+                signupError.textContent = "Napaka pri strežniku.";
+            });
+        });
+    }
 });

@@ -11,7 +11,7 @@ users = db.table("uporabniki")
 vozila = db.table("vozila")
 ocene = db.table("ocene")
 rezervacije = db.table("rezervacije")
-user = Query()
+User = Query()
 
 if len(vozila) ==0:
     vozila.insert_multiple([
