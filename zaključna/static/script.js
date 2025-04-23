@@ -85,4 +85,17 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     }
+
+    const isciBtn = document.getElementById("isciVozila");
+    if (isciBtn) {
+        isciBtn.addEventListener("click", function () {
+            const zacetek = document.getElementById(zacetek).value;
+            const konec = document.getElementById("konec").value;
+
+            if (!zacetek || !konec) {
+                alert("izberi oba datuma!");
+                return;
+            }
+        })
+    }
 });
