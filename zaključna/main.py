@@ -39,6 +39,7 @@ def vozila_stran():
 def rezervacija():
     return render_template('rezervacija.html')
 
+#iskanje oz rezerviranje prevoznih sredstev glede na datum
 @app.route("/api/razpolozljiva-vozila")
 def razpolozljiva():
     zacetek = request.args.get("zacetek")
@@ -61,6 +62,7 @@ def razpolozljiva():
             razpolozljiva_vozila.append(v)
     return jsonify(razpolozljiva_vozila)
 
+#iskanje prevoznih sredstev glede na lokacijo in tip vozila
 @app.route("/api/iskanje")
 def iskanje():
     tip = request.args.get("tip")
@@ -68,6 +70,7 @@ def iskanje():
     rezultati = [v for v in vozila.all() if (not tip or v["tip"] == tip) and (not lokacija or v["lokacija"] == lokacija)]
     return jsonify(rezultati)
 
+#prijava
 @app.route("/login",methods=['GET','POST'])
 def login():
     if request.method == 'POST':
@@ -85,6 +88,7 @@ def login():
             return jsonify({'success': False, 'error':'Uporabnik ne obstaja'})
     return render_template('login.html')
 
+#registracija
 @app.route("/signup",methods=['GET','POST'])
 def signup():
     if request.method == 'POST':
@@ -100,6 +104,7 @@ def signup():
     
     return render_template('signup.html')
 
+#odjava
 @app.route("/logout")
 def logout():
     session.pop('username', None)
