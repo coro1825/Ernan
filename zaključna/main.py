@@ -70,6 +70,37 @@ def iskanje():
     rezultati = [v for v in vozila.all() if (not tip or v["tip"] == tip) and (not lokacija or v["lokacija"] == lokacija)]
     return jsonify(rezultati)
 
+@app.route("/api/rezerviraj", methods=['POST'])
+def rezerviraj():
+    if 'username' not in session:
+        return jsonify({'success': False, 'error': 'Niste prijavljeni'}), 401
+    
+    data = request.json
+    vozilo_id = int(data.get('vozilo_id'))
+    zacetek = data.get('zecetek')
+    konec = data.get('konec')
+
+    if not vozilo_id or not zacetek or not konec:
+        return jsonify({'success': False, 'error': 'manjkajo podatki'})
+    
+    z = datetime.strptime(zacetek, "%Y-%m-%d")
+    k = datetime.strptime(konec, "%Y-%m-%d")
+
+    for r in rezervacije.search(Query().vozilo_id == vozilo_id):
+        z_r = datetime.strptime(r['zacetek'], "%Y-%m-%d")
+        k_r = datetime.strptime(r['konec'], "%Y-%m-%d")
+        if (z <= k_r and k >= z_r):
+            return jsonify({'success': False, 'error': 'Vozilo je že rezervirano v tem terminu'})
+        
+    rezervacije.insert({
+        'username' : session['username'],
+        'vozilo_id' : vozilo_id,
+        'zacetek' : zacetek,
+        'konec' : konec,
+    })    
+
+    return jsonify({'success': True, 'error': 'Rezervacija uspešna!'})
+
 #prijava
 @app.route("/login",methods=['GET','POST'])
 def login():

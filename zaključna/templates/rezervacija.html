@@ -1,35 +1,88 @@
 {% extends "base.html" %}
 {% block title %}Rezervacija{% endblock %}
 {% block content %}
-<h2>Rezervacija vozila</h2>
-<form method="post">
-    <label>Od: <input type="date" name="zacetek" required></label>
-    <label>Do: <input type="date" name="konec" required></label>
-    <button type="button" onclick="najdi()">Prikaži prosta vozila</button>
-    <div id="vozila"></div>
-</form>
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rezervacija Vozila</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Rezervacija Vozila</h1>
+        <nav>
+            <a href="/">Domov</a>
+            <a href="/vozila">Vozila</a>
+            <a href="/rezervacija">Rezervacija</a>
+        </nav>
+    </header>
 
-<script>
-function najdi() {
-    const z = document.querySelector("[name='zacetek']").value;
-    const k = document.querySelector("[name='konec']").value;
-    fetch(`/api/razpolozljiva-vozila?zacetek=${z}&konec=${k}`)
-        .then(r => r.json())
-        .then(data => {
-            let html = "<ul>";
-            data.forEach(v => {
-                html += `<li>${v.tip} - ${v.ime} (${v.lokacija}) 
-                    <form method="post" style="display:inline;">
-                        <input type="hidden" name="vozilo_id" value="${v.id}">
-                        <input type="hidden" name="zacetek" value="${z}">
-                        <input type="hidden" name="konec" value="${k}">
-                        <button type="submit">Rezerviraj</button>
-                    </form>
-                </li>`;
+    <div class="container">
+        <h2>Izberite vozilo in datum</h2>
+        <form id="rezervacija-form">
+            <div class="input-group">
+                <label for="vozilo">Izberite vozilo</label>
+                <select id="vozilo" name="vozilo">
+                    <option value="1">BMW M4</option>
+                    <option value="2">Audi RS5</option>
+                    <option value="3">Ford Mustang</option>
+                    <option value="4">Renault Clio RS</option>
+                    <option value="5">KTM Duke</option>
+                    <option value="6">VW Transporter</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="zacetek">Datum začetka</label>
+                <input type="date" id="zacetek" name="zacetek" required>
+            </div>
+
+            <div class="input-group">
+                <label for="konec">Datum konca</label>
+                <input type="date" id="konec" name="konec" required>
+            </div>
+
+            <button type="submit" class="button">Rezerviraj</button>
+        </form>
+
+        <div id="rezervacija-sporocilo"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#rezervacija-form").submit(function(event) {
+                event.preventDefault();
+
+                var vozilo_id = $("#vozilo").val();
+                var zacetek = $("#zacetek").val();
+                var konec = $("#konec").val();
+
+                $.ajax({
+                    url: "/api/rezerviraj",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        vozilo_id: vozilo_id,
+                        zacetek: zacetek,
+                        konec: konec
+                    }),
+                    success: function(response) {
+                        if (response.success) {
+                            $("#rezervacija-sporocilo").text(response.message).css("color", "green");
+                        } else {
+                            $("#rezervacija-sporocilo").text(response.error).css("color", "red");
+                        }
+                    },
+                    error: function() {
+                        $("#rezervacija-sporocilo").text("Napaka pri rezervaciji!").css("color", "red");
+                    }
+                });
             });
-            html += "</ul>";
-            document.getElementById("vozila").innerHTML = html;
         });
-}
-</script>
+    </script>
+</body>
+</html>
 {% endblock %}
