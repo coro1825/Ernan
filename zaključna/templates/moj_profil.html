@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Moj profil{% endblock %}
+{% block content %}
+
+<div class="profil-container">
+    <h1>Dobrodošel, {{ session['username'] }}</h1>
+    <h2>Moje rezervacije</h2>
+
+    {% if rezervacije %}
+        <ul class="rezervacije-seznam">
+            {% for r in rezervacije %}
+                <li class="rezervacija" id="rezervacija-{{ r.id }}">
+                    <strong>{{ r.vozilo }}</strong><br>
+                    od: {{ r.zacetek }}<br>
+                    do: {{ r.konec }}<br>
+                    <button onclick="preklicRezervacije('{{ r.id }}')">Prekliči</button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nimate nobenih rezervacij.</p>
+    {% endif %}
+
+    <div id="sporocilo" style="color: green; margin-top: 1em;"></div>
+</div>
+
+{% endblock %}

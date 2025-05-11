@@ -77,7 +77,7 @@ def rezerviraj():
     
     data = request.json
     vozilo_id = int(data.get('vozilo_id'))
-    zacetek = data.get('zecetek')
+    zacetek = data.get('zacetek')
     konec = data.get('konec')
 
     if not vozilo_id or not zacetek or not konec:
@@ -100,6 +100,20 @@ def rezerviraj():
     })    
 
     return jsonify({'success': True, 'error': 'Rezervacija uspešna!'})
+
+#prikaz profila in kaj si rezerviral
+@app.route("/moj_profil")
+def moj_profil():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    
+    uporabnik_rezervacije = rezervacije.search(Query().username == session['username'])
+    vozila_dict = {v["id"]: v["ime"] for v in vozila.all()}
+
+    for r in uporabnik_rezervacije:
+        r["vozilo"] = vozila_dict.get(r["vozilo_id"], "neznano vozilo")
+        r["id"] = r.doc_id
+    return render_template("moj_profil.html", rezervacije = uporabnik_rezervacije)
 
 #prijava
 @app.route("/login",methods=['GET','POST'])

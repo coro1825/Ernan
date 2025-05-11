@@ -15,7 +15,7 @@
             <a href="/vozila">Iskanje</a> |
             <a href="/rezervacija">Rezervacija</a> |
             {% if session.username %}
-                Prijavljen kot {{ session.username }} |
+                <a href="/moj_profil">{{ session.username }}</a> |
                 <a href="/logout">Odjava</a>
             {% else %}
                 <a href="/login">Prijava</a> |
