@@ -24,4 +24,23 @@
     <div id="sporocilo" style="color: green; margin-top: 1em;"></div>
 </div>
 
+<script>
+function preklicRezervacije(id) {
+    fetch("/api/preklici-rezervacijo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById("rezervacija-" + id).remove();
+            document.getElementById("sporocilo").innerText = "Uspešno ste preklicali rezervacijo.";
+        } else {
+            alert("Napaka: " + (data.error || "Preklic ni uspel"));
+        }
+    });
+}
+</script>
+
 {% endblock %}

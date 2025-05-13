@@ -115,6 +115,24 @@ def moj_profil():
         r["id"] = r.doc_id
     return render_template("moj_profil.html", rezervacije = uporabnik_rezervacije)
 
+@app.route("/api/preklici-rezervacijo", methods=["POST"])
+def preklic_rezervacije():
+    data = request.json
+    id_str = str(data.get("id", ""))
+
+    if not id_str.isdigit():
+        return jsonify({"success": False, "error": "Neveljaven ID"}), 400
+
+    id = int(id_str)
+    rezervacija = rezervacije.get(doc_id=id)
+
+    if rezervacija:
+        rezervacije.remove(doc_ids=[id])
+        return jsonify({"success": True, "message": "Rezervacija je bila uspešno preklicana."})
+    else:
+        return jsonify({"success": False, "error": "Rezervacija ne obstaja"}), 404
+
+
 #prijava
 @app.route("/login",methods=['GET','POST'])
 def login():
