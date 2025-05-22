@@ -13,15 +13,15 @@ ocene = db.table("ocene")
 rezervacije = db.table("rezervacije")
 User = Query()
 
-if len(vozila) ==0:
-    vozila.insert_multiple([
-        {"id": 1, "ime": "BMW M4", "lokacija": "Ljubljana", "tip": "Avto", "priljubljenost": 10},
-        {"id": 2, "ime": "Audi RS5", "lokacija": "Maribor", "tip": "Avto", "priljubljenost": 9},
-        {"id": 3, "ime": "Ford Mustang", "lokacija": "Celje", "tip": "Avto", "priljubljenost": 8},
-        {"id": 4, "ime": "Renault Clio RS", "lokacija": "Koper", "tip": "Avto", "priljubljenost": 7},
-        {"id": 5, "ime": "KTM Duke", "lokacija": "Ljubljana", "tip": "Motor", "priljubljenost": 6},
-        {"id": 6, "ime": "VW Transporter", "lokacija": "Maribor", "tip": "Kombi", "priljubljenost": 6},
-    ])
+vozila.truncate()
+vozila.insert_multiple([
+    {"id": 1, "ime": "BMW M4",           "lokacija": "Ljubljana", "tip": "Avto",  "priljubljenost": 10, "cena_na_dan": 100},
+    {"id": 2, "ime": "Audi RS5",         "lokacija": "Maribor",   "tip": "Avto",  "priljubljenost":  9, "cena_na_dan":  90},
+    {"id": 3, "ime": "Ford Mustang",     "lokacija": "Celje",     "tip": "Avto",  "priljubljenost":  8, "cena_na_dan":  85},
+    {"id": 4, "ime": "Renault Clio RS",  "lokacija": "Koper",     "tip": "Avto",  "priljubljenost":  7, "cena_na_dan":  70},
+    {"id": 5, "ime": "KTM Duke 390",         "lokacija": "Ljubljana", "tip": "Motor", "priljubljenost":  9, "cena_na_dan":  60},
+    {"id": 6, "ime": "VW Transporter",   "lokacija": "Maribor",   "tip": "Kombi", "priljubljenost":  6, "cena_na_dan":  65},
+])
 
 
 
@@ -37,7 +37,11 @@ def vozila_stran():
 
 @app.route("/rezervacija")
 def rezervacija():
-    return render_template('rezervacija.html')
+    if 'username' not in session:
+        return redirect(url_for("login"))
+    vozila_vsa = vozila.all()
+    print("DEBUG vozila_vsa", vozila_vsa)
+    return render_template('rezervacija.html', vozila=vozila_vsa)
 
 #iskanje oz rezerviranje prevoznih sredstev glede na datum
 @app.route("/api/razpolozljiva-vozila")

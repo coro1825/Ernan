@@ -1,88 +1,80 @@
 {% extends "base.html" %}
-{% block title %}Rezervacija{% endblock %}
+{% block title %}Rezervacija vozila{% endblock %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="sl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rezervacija Vozila</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-    <header>
-        <h1>Rezervacija Vozila</h1>
-        <nav>
-            <a href="/">Domov</a>
-            <a href="/vozila">Vozila</a>
-            <a href="/rezervacija">Rezervacija</a>
-        </nav>
-    </header>
 
-    <div class="container">
-        <h2>Izberite vozilo in datum</h2>
-        <form id="rezervacija-form">
-            <div class="input-group">
-                <label for="vozilo">Izberite vozilo</label>
-                <select id="vozilo" name="vozilo">
-                    <option value="1">BMW M4</option>
-                    <option value="2">Audi RS5</option>
-                    <option value="3">Ford Mustang</option>
-                    <option value="4">Renault Clio RS</option>
-                    <option value="5">KTM Duke</option>
-                    <option value="6">VW Transporter</option>
-                </select>
-            </div>
+<h2>Rezervacija vozila</h2>
 
-            <div class="input-group">
-                <label for="zacetek">Datum začetka</label>
-                <input type="date" id="zacetek" name="zacetek" required>
-            </div>
+<form id="rezervacijaForm">
+  <label>Izberi vozilo:</label><br>
+  <select id="vozilo_id" name="vozilo_id" required>
+    {% for v in vozila %}
+      <option value="{{ v.id }}" data-cena="{{ v.cena_na_dan }}">
+        {{ v.ime }} – {{ v.lokacija }} – {{ v.tip }} – {{ v.cena_na_dan }} €/dan
+      </option>
+    {% endfor %}
+  </select><br><br>
 
-            <div class="input-group">
-                <label for="konec">Datum konca</label>
-                <input type="date" id="konec" name="konec" required>
-            </div>
+  <label>Datum od:</label><br>
+  <input type="date" id="datum_od" name="datum_od" required><br><br>
 
-            <button type="submit" class="button">Rezerviraj</button>
-        </form>
+  <label>Datum do:</label><br>
+  <input type="date" id="datum_do" name="datum_do" required><br><br>
 
-        <div id="rezervacija-sporocilo"></div>
-    </div>
+  <p>Skupna cena: <span id="skupnaCena">0.00</span> €</p>
+  <button type="submit">Rezerviraj</button>
+</form>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $("#rezervacija-form").submit(function(event) {
-                event.preventDefault();
+<script>
+function izracunajCeno() {
+  const sel = document.getElementById('vozilo_id');
+  const cenaNaDan = parseFloat(sel.selectedOptions[0].dataset.cena);
+  const odVal = document.getElementById('datum_od').value;
+  const doVal = document.getElementById('datum_do').value;
 
-                var vozilo_id = $("#vozilo").val();
-                var zacetek = $("#zacetek").val();
-                var konec = $("#konec").val();
+  if (isNaN(cenaNaDan) || !odVal || !doVal) {
+    document.getElementById('skupnaCena').textContent = '0.00';
+    return;
+  }
+  const od = new Date(odVal);
+  const do_ = new Date(doVal);
+  if (do_ < od) {
+    document.getElementById('skupnaCena').textContent = '0.00';
+    return;
+  }
+  const diff = (do_ - od)/(1000*60*60*24) + 1;
+  const cenaSkupaj = diff * cenaNaDan;
+  document.getElementById('skupnaCena').textContent = cenaSkupaj.toFixed(2);
+}
+['vozilo_id', 'datum_od', 'datum_do'].forEach(id =>
+  document.getElementById(id).addEventListener('change', izracunajCeno)
+);
 
-                $.ajax({
-                    url: "/api/rezerviraj",
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify({
-                        vozilo_id: vozilo_id,
-                        zacetek: zacetek,
-                        konec: konec
-                    }),
-                    success: function(response) {
-                        if (response.success) {
-                            $("#rezervacija-sporocilo").text(response.message).css("color", "green");
-                        } else {
-                            $("#rezervacija-sporocilo").text(response.error).css("color", "red");
-                        }
-                    },
-                    error: function() {
-                        $("#rezervacija-sporocilo").text("Napaka pri rezervaciji!").css("color", "red");
-                    }
-                });
-            });
-        });
-    </script>
-</body>
-</html>
+document.getElementById('rezervacijaForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const vozilo_id = document.getElementById('vozilo_id').value;
+  const zacetek = document.getElementById('datum_od').value;
+  const konec = document.getElementById('datum_do').value;
+
+  // Pošlji POST na /api/rezerviraj
+  fetch('/api/rezerviraj', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ vozilo_id, zacetek, konec })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert(`Rezervacija uspešna! Cena: ${data.cena} € za ${data.dni} dni.`);
+      // Po uspehu lahko preusmeriš ali resetiraš formo
+      document.getElementById('rezervacijaForm').reset();
+      document.getElementById('skupnaCena').textContent = '0.00';
+    } else {
+      alert('Napaka: ' + data.error);
+    }
+  })
+  .catch(() => alert('Napaka pri pošiljanju zahteve.'));
+});
+</script>
+
 {% endblock %}
