@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Iskanje vozil{% endblock %}
 {% block content %}
+
 <h2>Iskanje vozil</h2>
 <input type="text" id="lokacija" placeholder="Lokacija">
 <select id="tip">
-    <option value="">vse</option>
+    <option value="">Vse</option>
     <option value="Avto">Avto</option>
     <option value="Kombi">Kombi</option>
     <option value="Motor">Motor</option>
@@ -12,21 +13,22 @@
 <button onclick="isci()">Išči</button>
 <div id="rezultati"></div>
 
+
+
 <script>
 function isci() {
     const lokacija = document.getElementById("lokacija").value;
     const tip = document.getElementById("tip").value;
-    fetch('/api/iskanje?tip=${tip}&lokacija=${lokacija}')
+    fetch(`/api/iskanje?tip=${tip}&lokacija=${lokacija}`)
         .then(r => r.json())
         .then(data => {
             let html = "<ul>";
-                data.forEach(v => {
-                    html += '<li>${v.tip} - ${v.ime} (${v.lokacija})</li>`;
-                })
-                html += "<ul>";
-                    document.getElementById("rezultati").innerHTML = html;
-                    
-        })
+            data.forEach(v => {
+                html += `<li>${v.tip} - ${v.ime} (${v.lokacija})</li>`;
+            });
+            html += "</ul>";
+            document.getElementById("rezultati").innerHTML = html;
+        });
 }
 </script>
 {% endblock %}

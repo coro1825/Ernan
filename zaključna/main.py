@@ -71,8 +71,25 @@ def razpolozljiva():
 def iskanje():
     tip = request.args.get("tip")
     lokacija = request.args.get("lokacija")
-    rezultati = [v for v in vozila.all() if (not tip or v["tip"] == tip) and (not lokacija or v["lokacija"] == lokacija)]
-    return jsonify(rezultati)
+    min_ocena = request.args.get("min_ocena", type=float)
+
+    rezultati = []
+
+    for v in vozila.all():
+        if tip and v["lokacija"] != lokacija:
+            continue
+
+        vozilo_ocene = [float(o["ocena"]) for o in ocene.all() if o.get("vozilo_id") == v["id"] and "ocena" in o]
+        povprecje = sum(vozilo_ocene) / len(vozilo_ocene) if vozilo_ocene else 0
+
+        if min_ocena and povprecje < min_ocena:
+            continue
+
+        v["povprecna_ocena"] = round(povprecje, 2)
+        rezultati.append(v)
+
+        return jsonify(rezultati)
+    
 
 @app.route("/api/rezerviraj", methods=['POST'])
 def rezerviraj():
