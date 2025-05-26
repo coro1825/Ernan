@@ -194,6 +194,7 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('login'))
 
+
 #premium
 @app.route("/premium")
 def premium():
@@ -203,6 +204,24 @@ def premium():
     user = users.get(User.username == session["username"])
     is_premium = user.get("premium", False)
     return render_template("premium.html", is_premium=is_premium)
+
+@app.route("/placaj_premium", methods=["GET", "POST"])
+def placaj_premium():
+    if 'username' not in session:
+        return redirect(url_for("login"))
+    
+    if request.method == "post":
+        kartica = request.form.get("kartica")
+        mesec_poteka = request.form.get("mesec_poteka")
+        leto_poteka = request.form.get("leto_poteka")
+        cvv = request.form.get("cvv")
+        samodejno = request.form.get("samodejno") == "on"
+
+        users.update({"premium": True}, User.username == session["username"])
+
+        return redirect(url_for("premium"))
+
+    return render_template("placaj_premium.html")
 
 
 if __name__=="__main__":

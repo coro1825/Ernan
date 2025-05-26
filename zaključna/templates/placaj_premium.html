@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Plačaj Premium članstvo{% endblock %}
+{% block content %}
+<h2>Plačaj Premium članstvo</h2>
+<form method="POST">
+    <label>Številka kartice:</label><br>
+    <input type="text" name="kartica" placeholder="1234 5678 9012 3456" required maxlength="19"><br><br>
+
+    <label>Veljavnost kartice:</label><br>
+    <input type="text" name="mesec_poteka" placeholder="MM" required maxlength="2" size="2">
+    /
+    <input type="text" name="leto_poteka" placeholder="YY" required maxlength="2" size="2"><br><br>
+
+    <label>CVV:</label><br>
+    <input type="text" name="cvv" placeholder="123" required maxlength="3" size="3"><br><br>
+
+    <label><input type="checkbox" name="samodejno"> Samodejno obnavljanje plačila vsak mesec</label><br><br>
+
+    <button type="submit">Plačaj 10 €</button>
+</form>
+{% endblock %}

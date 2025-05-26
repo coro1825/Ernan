@@ -16,11 +16,15 @@
             <a href="/rezervacija">Rezervacija</a> |
             {% if session.username %}
                 <a href="/moj_profil">{{ session.username }}</a> |
-                <a href="/logout">Odjava</a>
+                <a href="/logout">Odjava</a> |
             {% else %}
                 <a href="/login">Prijava</a> |
-                <a href="/signup">Registracija</a>
+                <a href="/signup">Registracija</a> 
             {% endif %}
+            {% if 'username' in session %}
+                <a href="/premium">Premium</a> 
+            {% endif %}
+
         </nav>
         <hr>
     </header>
