@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Premium članstvo{% endblock %}
+{% block content %}
+<h2>Premium članstvo</h2>
+
+{% if is_premium %}
+    <p><strong>Ste premium član.</strong> Hvala za podporo!</p>
+    <ul>
+        <li>✔ Brez oglasov</li>
+        <li>✔ Dostop do ekskluzivnih vozil</li>
+        <li>✔ Hitrejša podpora</li>
+        <li>✔ Možnost brezplačne odpovedi rezervacije</li>
+    </ul>
+{% else %}
+    <p>Postanite Premium član za samo <strong>10 € na mesec</strong> in pridobite:</p>
+    <ul>
+        <li>✔ Brez oglasov</li>
+        <li>✔ Dostop do ekskluzivnih vozil</li>
+        <li>✔ Hitrejša podpora</li>
+        <li>✔ Možnost brezplačne odpovedi rezervacije</li>
+    </ul>
+
+    <a href="/placaj_premium" class="btn">Plačaj 10 € in postani Premium</a>
+
+{% endif %}
+
+{% endblock %}

@@ -194,6 +194,17 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('login'))
 
+#premium
+@app.route("/premium")
+def premium():
+    if 'username' not in session:
+        return redirect(url_for("login"))
+
+    user = users.get(User.username == session["username"])
+    is_premium = user.get("premium", False)
+    return render_template("premium.html", is_premium=is_premium)
+
+
 if __name__=="__main__":
     if not os.path.exists('templates'):
         os.makedirs('templates')
