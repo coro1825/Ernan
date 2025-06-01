@@ -223,6 +223,10 @@ def placaj_premium():
 
     return render_template("placaj_premium.html")
 
+@app.route("/o-nas")
+def o_nas():
+    return render_template("o_nas.html")
+
 
 if __name__=="__main__":
     if not os.path.exists('templates'):

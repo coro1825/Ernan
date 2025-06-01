@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}O nas{% endblock %}
+
+{% block content %}
+
+
+<div class="o-nas-container">
+  <p>Smo mlado in zagnano podjetje, specializirano za najem vozil po vsej Sloveniji. Naša vizija je omogočiti preprosto, hitro in zanesljivo izkušnjo najema avtomobilov, kombijev in motorjev za vsakodnevne ali posebne priložnosti.</p>
+
+  <p>Naša platforma omogoča enostavno iskanje, rezervacijo in ocenjevanje vozil. Sodelujemo z različnimi lokalnimi ponudniki, da vam omogočimo širok izbor kakovostnih in dobro vzdrževanih vozil.</p>
+
+  <h3>Zakaj izbrati nas?</h3>
+  <ul>
+    <li>✅ Enostaven in hiter sistem rezervacij</li>
+    <li>✅ Velika izbira vozil na različnih lokacijah</li>
+    <li>✅ Pregledne cene in ocene uporabnikov</li>
+    <li>✅ Zanesljiva podpora uporabnikom</li>
+  </ul>
+
+  <h3>Kontakt</h3>
+  <p><strong>Email:</strong> podpora@najemivozilo.si</p>
+  <p><strong>Telefon:</strong> 030 123 456</p>
+  <p><strong>Naslov:</strong> Cesta mobilnosti 10, 1000 Ljubljana</p>
+</div>
+
+<style>
+.o-nas-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  line-height: 1.6;
+  background-color: #fafafa;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.o-nas-container h3 {
+  margin-top: 20px;
+}
+.o-nas-container ul {
+  list-style: none;
+  padding-left: 0;
+}
+.o-nas-container ul li::before {
+  content: "✔️ ";
+  margin-right: 8px;
+}
+</style>
+{% endblock %}
