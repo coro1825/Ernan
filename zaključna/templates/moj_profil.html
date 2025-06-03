@@ -16,6 +16,9 @@
                     <button onclick="preklicRezervacije('{{ r.id }}')">Prekliči</button>
                 </li>
             {% endfor %}
+            <a href="{{ url_for('ocena') }}">Oceni vozilo</a>
+
+
         </ul>
     {% else %}
         <p>Nimate nobenih rezervacij.</p>
