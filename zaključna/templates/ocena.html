@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %} Ocena {% endblock %}
+{% block content %}
+<h2>Oceni vozilo</h2>
+
+<form method="POST">
+    <label for="vozilo_id">Izberi vozilo:</label>
+    <select name="vozilo_id" required>
+        {% for v in vozila %}
+            <option value="{{ v.id }}">{{ v.ime }} – {{ v.lokacija }} – {{ v.tip }}</option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+    <label for="ocena">Ocena (1-5):</label>
+    <input type="number" name="ocena" min="1" max="5" required><br><br>
+
+    <label for="komentar">Komentar:</label><br>
+    <textarea name="komentar" rows="4" cols="40"></textarea><br><br>
+
+    <button type="submit">Oddaj oceno</button>
+</form>
+
+{% if napaka %}
+<p style="color: red;">{{ napaka }}</p>
+{% endif %}
+{% if potrjeno %}
+<p style="color: green;">Hvala za vašo oceno!</p>
+{% endif %}
+
+{% endblock %}

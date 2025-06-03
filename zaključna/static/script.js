@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContenLoaded", function (){
 
     const loginForm = document.getElementById("loginForm");
     if (loginForm) {
@@ -46,56 +46,48 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    const signupForm = document.getElementById("signupForm");
-    if (signupForm) {
-        const newUsername = document.getElementById("newUsername");
-        const newPassword = document.getElementById("newPassword");
-        const signupError = document.getElementById("signupError");
 
-        signupForm.addEventListener("submit", function (event) {
-            event.preventDefault();
+    document.getElementById("signupForm")?.addEventListener("submit", function (event) {
+        event.preventDefault();
 
-            const username = newUsername.value.trim();
-            const password = newPassword.value.trim();
+        let username = document.getElementById("newUsername").value;
+        let password = document.getElementById("newPassword").value;
 
-            if (!username || !password) {
-                signupError.textContent = "Vsa polja morajo biti izpolnjena!";
-                return;
+        fetch("/signup",{
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            body: new URLSearchParams({username: username,password: password})
+        })
+        .then(Response => Response.json())
+        .then(data => {
+            if(data.success) {
+                window.location.href = "/";
+            } else{
+                document.getElementById("signupError").textContent = data.error;
             }
+        })
+        .catch(error => console.error("Napaka pri registraciji", error));
+    });
 
-            fetch("/signup", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: new URLSearchParams({ username, password })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    localStorage.setItem("zadnjiUporabnik", username);
-                    window.location.href = "/";
-                } else {
-                    signupError.textContent = data.error;
-                    signupError.style.color = "red";
-                    signupError.style.animation = "blink 0.4s ease-in-out 3";
-                }
-            })
-            .catch(error => {
-                console.error("Napaka pri registraciji:", error);
-                signupError.textContent = "Napaka pri strežniku.";
-            });
+    function preklic(event, id) {
+        event.preventDefault();        
+        fetch("/api/preklici-rezervacijo", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id }) 
+        })
+        .then(res => res.json()) 
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert("Napaka pri preklicu rezervacije: " + (data.error || "Neznana napaka."));
+            }
+        })
+        .catch(err => {
+            alert("Napaka pri povezovanju s strežnikom.");
+            console.error(err);
         });
     }
 
-    const isciBtn = document.getElementById("isciVozila");
-    if (isciBtn) {
-        isciBtn.addEventListener("click", function () {
-            const zacetek = document.getElementById(zacetek).value;
-            const konec = document.getElementById("konec").value;
-
-            if (!zacetek || !konec) {
-                alert("izberi oba datuma!");
-                return;
-            }
-        })
-    }
 });

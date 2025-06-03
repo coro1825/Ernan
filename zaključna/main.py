@@ -15,33 +15,42 @@ User = Query()
 
 vozila.truncate()
 vozila.insert_multiple([
-    {"id": 1, "ime": "BMW M4",           "lokacija": "Ljubljana", "tip": "Avto",  "priljubljenost": 10, "cena_na_dan": 100},
-    {"id": 2, "ime": "Audi RS5",         "lokacija": "Maribor",   "tip": "Avto",  "priljubljenost":  9, "cena_na_dan":  90},
-    {"id": 3, "ime": "Ford Mustang",     "lokacija": "Celje",     "tip": "Avto",  "priljubljenost":  8, "cena_na_dan":  85},
-    {"id": 4, "ime": "Renault Clio RS",  "lokacija": "Koper",     "tip": "Avto",  "priljubljenost":  7, "cena_na_dan":  70},
-    {"id": 5, "ime": "KTM Duke 390",         "lokacija": "Ljubljana", "tip": "Motor", "priljubljenost":  9, "cena_na_dan":  60},
-    {"id": 6, "ime": "VW Transporter",   "lokacija": "Maribor",   "tip": "Kombi", "priljubljenost":  6, "cena_na_dan":  65},
+    {"id": 1, "ime": "BMW M4", "lokacija": "Ljubljana", "tip": "Avto", "priljubljenost": 10, "cena_na_dan": 100, "slika": "bmw.jpg"},
+    {"id": 2, "ime": "Audi RS5", "lokacija": "Maribor", "tip": "Avto", "priljubljenost": 9, "cena_na_dan": 90, "slika": "audi.jpg"},
+    {"id": 3, "ime": "Ford Mustang", "lokacija": "Celje", "tip": "Avto", "priljubljenost": 8, "cena_na_dan": 85, "slika": "mustang.jpg"},
+    {"id": 4, "ime": "Renault Clio RS", "lokacija": "Koper", "tip": "Avto", "priljubljenost": 7, "cena_na_dan": 70, "slika": "clio.jpg"},
+    {"id": 5, "ime": "KTM Duke", "lokacija": "Ljubljana", "tip": "Motor", "priljubljenost": 6, "cena_na_dan": 60, "slika": "ktm.jpg"},
+    {"id": 6, "ime": "VW Transporter", "lokacija": "Maribor", "tip": "Kombi", "priljubljenost": 6, "cena_na_dan": 65, "slika": "transporter.jpg"},
+    {"id": 7, "ime": "Porsche 911", "lokacija": "Ljubljana", "tip": "Avto", "priljubljenost": 10, "cena_na_dan": 150, "slika": "porsche911.jpg"},
+    {"id": 8, "ime": "Mercedes-Benz S-Class", "lokacija": "Maribor", "tip": "Avto", "priljubljenost": 9, "cena_na_dan": 140, "slika": "mercedes_sclass.jpg"},
+    {"id": 9, "ime": "Mercedes-Benz G-Class", "lokacija": "Ljubljana", "tip": "Avto", "priljubljenost": 9, "cena_na_dan": 145, "slika": "mercedes_gclass.jpg"},
+    {"id": 10, "ime": "BMW 7 Series", "lokacija": "Celje", "tip": "Avto", "priljubljenost": 8, "cena_na_dan": 135, "slika": "bmw7.jpg"},
+    {"id": 11, "ime": "Tesla Model S", "lokacija": "Koper", "tip": "Avto", "priljubljenost": 8, "cena_na_dan": 70, "slika": "tesla_model_s.jpg"},
+    {"id": 12, "ime": "Jaguar F-Type", "lokacija": "Ljubljana", "tip": "Avto", "priljubljenost": 7, "cena_na_dan": 60, "slika": "jaguar_ftype.jpg"}
 ])
 
 
 
+# Index stran
 @app.route("/")
 def index():
     prikazana_vozila = sorted(vozila.all(), key=lambda x:x['priljubljenost'], reverse=True)
     mnenja = ocene.all()
-    return render_template('index.html', vozila=prikazana_vozila, ocene=mnenja)
+    vozila_dict = {v["id"]: v["ime"] for v in vozila.all()}
+    return render_template('index.html', vozila=prikazana_vozila, ocene=mnenja, vozila_dict=vozila_dict)
 
+# Prikaz vseh vozil
 @app.route("/vozila")
 def vozila_stran():
-    return render_template('vozila.html')
+    return render_template("vozila.html")
 
-@app.route("/rezervacija")
+
+# Stran za rezervacijo
+@app.route('/rezervacija')
 def rezervacija():
-    if 'username' not in session:
-        return redirect(url_for("login"))
-    vozila_vsa = vozila.all()
-    print("DEBUG vozila_vsa", vozila_vsa)
-    return render_template('rezervacija.html', vozila=vozila_vsa)
+    # Pridobi vozila iz baze ali seznama
+    vozila = db.table("vozila")  
+    return render_template("rezervacija.html", vozila=vozila)
 
 #iskanje oz rezerviranje prevoznih sredstev glede na datum
 @app.route("/api/razpolozljiva-vozila")
@@ -95,32 +104,46 @@ def iskanje():
 def rezerviraj():
     if 'username' not in session:
         return jsonify({'success': False, 'error': 'Niste prijavljeni'}), 401
-    
+
     data = request.json
     vozilo_id = int(data.get('vozilo_id'))
     zacetek = data.get('zacetek')
     konec = data.get('konec')
 
     if not vozilo_id or not zacetek or not konec:
-        return jsonify({'success': False, 'error': 'manjkajo podatki'})
-    
+        return jsonify({'success': False, 'error': 'Manjkajo podatki'})
+
     z = datetime.strptime(zacetek, "%Y-%m-%d")
     k = datetime.strptime(konec, "%Y-%m-%d")
 
+    if k < z:
+        return jsonify({'success': False, 'error': 'Datum konca ne more biti pred datumom začetka'})
+
+    # Poišči vozilo
+    vozilo = next((v for v in vozila if v['id'] == vozilo_id), None)
+    if not vozilo:
+        return jsonify({'success': False, 'error': 'Vozilo ne obstaja'})
+
+    # tukaj nam preveri podvajanje rezervacije
     for r in rezervacije.search(Query().vozilo_id == vozilo_id):
         z_r = datetime.strptime(r['zacetek'], "%Y-%m-%d")
         k_r = datetime.strptime(r['konec'], "%Y-%m-%d")
         if (z <= k_r and k >= z_r):
             return jsonify({'success': False, 'error': 'Vozilo je že rezervirano v tem terminu'})
-        
-    rezervacije.insert({
-        'username' : session['username'],
-        'vozilo_id' : vozilo_id,
-        'zacetek' : zacetek,
-        'konec' : konec,
-    })    
 
-    return jsonify({'success': True, 'error': 'Rezervacija uspešna!'})
+    stevilo_dni = (k - z).days + 1  # vključno z zadnjim dnem
+    skupna_cena = stevilo_dni * vozilo['cena_na_dan']
+
+    rezervacije.insert({
+        'username': session['username'],
+        'vozilo_id': vozilo_id,
+        'zacetek': zacetek,
+        'konec': konec,
+        'stevilo_dni': stevilo_dni,
+        'skupna_cena': skupna_cena
+    })
+
+    return jsonify({'success': True, 'message': 'Rezervacija uspešna!', 'cena': skupna_cena, 'dni': stevilo_dni})
 
 #prikaz profila in kaj si rezerviral
 @app.route("/moj_profil")
@@ -136,6 +159,7 @@ def moj_profil():
         r["id"] = r.doc_id
     return render_template("moj_profil.html", rezervacije = uporabnik_rezervacije)
 
+# preklic rezervacije če želiš
 @app.route("/api/preklici-rezervacijo", methods=["POST"])
 def preklic_rezervacije():
     data = request.json
@@ -209,19 +233,70 @@ def premium():
 def placaj_premium():
     if 'username' not in session:
         return redirect(url_for("login"))
-    
+    #simulacija plačila
     if request.method == "post":
         kartica = request.form.get("kartica")
         mesec_poteka = request.form.get("mesec_poteka")
         leto_poteka = request.form.get("leto_poteka")
         cvv = request.form.get("cvv")
         samodejno = request.form.get("samodejno") == "on"
-
+        
+        #označitev uporabnika kot premium
         users.update({"premium": True}, User.username == session["username"])
-
+       
+        #preusmeritev na premium stran
         return redirect(url_for("premium"))
 
+    #če je get, naj nam prikaže obrazec
     return render_template("placaj_premium.html")
+
+# placilo
+@app.route("/placilo", methods=["POST"])
+def placilo():
+    if 'username' not in session:
+        return redirect(url_for("login"))
+
+    data = request.form
+    znesek = data.get("znesek")
+    
+    print(f"[EMAIL] Uporabniku {session['username']} smo poslali potrditveno e-pošto o plačilu {znesek} EUR.")
+
+    return render_template("uspesno_placilo.html", znesek=znesek)
+
+@app.route("/ocena", methods=["GET", "POST"])
+def ocena():
+    if 'username' not in session:
+        return redirect(url_for("login"))
+
+    uporabnik = session["username"]
+    vsa_vozila = vozila.all()  # <-- VSA vozila za izbor v dropdownu
+
+    if request.method == "POST":
+        vozilo_id = int(request.form.get("vozilo_id"))
+        ocena_vrednost = int(request.form.get("ocena"))
+        komentar = request.form.get("komentar", "").strip()
+
+        if not (1 <= ocena_vrednost <= 5):
+            return render_template("ocena.html", vozila=vsa_vozila, napaka="Ocena mora biti med 1 in 5.")
+
+        # Prepreči podvojeno ocenjevanje
+        obstaja = ocene.get((Query().username == uporabnik) & (Query().vozilo_id == vozilo_id))
+        if obstaja:
+            return render_template("ocena.html", vozila=vsa_vozila, napaka="To vozilo ste že ocenili.")
+
+        # Shrani oceno
+        ocene.insert({
+            "username": uporabnik,
+            "vozilo_id": vozilo_id,
+            "ocena": ocena_vrednost,
+            "komentar": komentar,
+            "datum": datetime.now().strftime("%Y-%m-%d")
+        })
+
+        return render_template("ocena.html", vozila=vsa_vozila, potrjeno=True)
+
+    return render_template("ocena.html", vozila=vsa_vozila)
+
 
 @app.route("/o-nas")
 def o_nas():

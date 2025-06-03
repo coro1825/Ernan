@@ -1,27 +1,29 @@
 {% extends "base.html" %}
 {% block title %}Registracija{% endblock %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="sl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registracija</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h2>Registracija</h2>
-        <form id="signupForm">
-            <input type="text" id="newUsername" placeholder="Uporabniško ime" required>
-            <input type="password" id="newPassword" placeholder="Geslo" required>
-            <button type="submit">Registracija</button>
-        </form>
-        <p>Že imaš račun? <a href="{{ url_for('login') }}">Prijavi se</a></p>
-        <p id="signupError" class="error"></p>
-    </div>
+<h2>Registracija</h2>
+<form id="signupForm">
+    <input type="text" name="username" placeholder="Uporabniško ime" required><br>
+    <input type="password" name="password" placeholder="Geslo" required><br>
+    <button type="submit">Registriraj se</button>
+</form>
+<p id="error" style="color: red;"></p>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
-</html>
+<script>
+document.getElementById("signupForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    fetch("/signup", {
+        method: "POST",
+        body: data
+    }).then(res => res.json())
+      .then(result => {
+        if (result.success) {
+            window.location.href = "/";  // ali "/placilo" po želji
+        } else {
+            document.getElementById("error").textContent = result.error;
+        }
+      });
+});
+</script>
 {% endblock %}

@@ -1,70 +1,117 @@
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
-    color: #333;
+    font-family: 'Helvetica Neue', sans-serif;
     margin: 0;
     padding: 0;
+    background-color: #f4f4f9; /* svetlo siva ozadje */
+    color: #333;
+    line-height: 1.6;
 }
 
 header {
-    background-color: #004080;
-    color: white;
-    padding: 1rem;
+    background-color: #ff4500; /* Rdeča barva */
+    color: #fff;
+    padding: 30px 0;
     text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    font-size: 3em;
+    margin: 0;
+    font-weight: 700;
 }
 
 nav {
-    margin-top: 0.5rem;
+    margin-top: 15px;
 }
 
 nav a {
     color: #fff;
-    margin: 0 1rem;
     text-decoration: none;
-    font-weight: bold;
+    font-size: 1.1em;
+    margin: 0 20px;
+    padding: 8px 20px;
+    display: inline-block;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
 }
 
 nav a:hover {
-    text-decoration: underline;
-}
-
-main {
-    padding: 2rem;
-    max-width: 800px;
-    margin: auto;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-}
-
-h1, h2 {
-    color: #004080;
-}
-
-button {
-    background-color: #007acc;
+    background-color: #f76c23; /* Oranžna barva ob hoverju */
     color: white;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    margin-top: 0.5rem;
-    cursor: pointer;
-    border-radius: 5px;
 }
 
-button:hover {
-    background-color: #005a99;
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 40px auto;
 }
 
-input, select, textarea {
+form {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    animation: slideIn 0.5s ease-out; /* Dodana animacija */
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.button {
+    display: inline-block;
+    padding: 12px 30px;
+    background-color: #f76c23; /* Oranžna barva */
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    margin-top: 20px;
+    font-size: 1.2em;
+    transition: background-color 0.3s ease;
+    text-align: center;
+}
+
+.button:hover {
+    background-color: #e65c00; /* Temnejša oranžna ob hoverju */
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    font-size: 1.1em;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.input-group input, .input-group select {
     width: 100%;
-    padding: 0.6rem;
-    margin: 0.4rem 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 12px;
+    font-size: 1.1em;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
 }
 
-@keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.2; }
+#rezervacija-sporocilo {
+    margin-top: 20px;
+    font-size: 1.2em;
+    font-weight: bold;
 }
 
+@media (max-width: 768px) {
+    .container {
+        width: 100%;
+        padding: 0 15px;
+    }
+}

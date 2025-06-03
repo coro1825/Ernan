@@ -21,7 +21,11 @@
   <input type="date" id="datum_do" name="datum_do" required><br><br>
 
   <p>Skupna cena: <span id="skupnaCena">0.00</span> €</p>
-  <button type="submit">Rezerviraj</button>
+  <form id="placiloForm" method="POST" action="/placilo" style="display:none; margin-top: 20px;">
+    <input type="hidden" name="znesek" id="placiloZnesek">
+    <button type="submit">Plačaj zdaj</button>
+  </form>
+
 </form>
 
 <script>
@@ -45,10 +49,13 @@ function izracunajCeno() {
   const cenaSkupaj = diff * cenaNaDan;
   document.getElementById('skupnaCena').textContent = cenaSkupaj.toFixed(2);
 }
+
+// Izračun cene ob spremembi izbire vozila ali datumov
 ['vozilo_id', 'datum_od', 'datum_do'].forEach(id =>
   document.getElementById(id).addEventListener('change', izracunajCeno)
 );
 
+// Pošlji rezervacijo preko AJAX-a
 document.getElementById('rezervacijaForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
@@ -63,16 +70,21 @@ document.getElementById('rezervacijaForm').addEventListener('submit', function(e
     body: JSON.stringify({ vozilo_id, zacetek, konec })
   })
   .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      alert(`Rezervacija uspešna! Cena: ${data.cena} € za ${data.dni} dni.`);
-      // Po uspehu lahko preusmeriš ali resetiraš formo
-      document.getElementById('rezervacijaForm').reset();
-      document.getElementById('skupnaCena').textContent = '0.00';
-    } else {
-      alert('Napaka: ' + data.error);
-    }
-  })
+.then(data => {
+  if (data.success) {
+    alert(`Rezervacija uspešna! Cena: ${data.cena} € za ${data.dni} dni.`);
+
+    // Nastavi znesek in prikaži gumb za plačilo
+    document.getElementById('placiloZnesek').value = data.cena.toFixed(2);
+    document.getElementById('placiloForm').style.display = 'block';
+
+    document.getElementById('rezervacijaForm').reset();
+    document.getElementById('skupnaCena').textContent = '0.00';
+  } else {
+      alert('Napaka: ' + data.e);
+  }
+})
+
   .catch(() => alert('Napaka pri pošiljanju zahteve.'));
 });
 </script>
